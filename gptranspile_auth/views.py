@@ -1,6 +1,7 @@
 "views for the api"
 import secrets
 from dataclasses import dataclass
+from datetime import timedelta
 
 from django.utils import timezone
 from dotenv import dotenv_values
@@ -48,7 +49,7 @@ def auth(request):
 
     user_session = UserSession(session_token=session,
                                access_token=oauth_response.access_token,
-                               expiry=timezone.now(),
+                               expiry=timezone.now() + timedelta(days=1),
                                userid=user_response["id"]
                                )
     user_session.save()
