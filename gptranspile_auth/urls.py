@@ -1,9 +1,9 @@
 "url map for the api"
 from django.urls import path
 
-from .views import root
+from .views import auth
 
 app_name = "gptranspile_auth"
 urlpatterns = [
-    path("", root, name="root")
+    path("", auth, name="root")
 ]
