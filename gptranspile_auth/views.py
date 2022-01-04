@@ -1,4 +1,5 @@
 "views for the api"
+import secrets
 from dataclasses import dataclass
 from dotenv import dotenv_values
 from django.http import HttpResponseRedirect
@@ -35,10 +36,12 @@ def auth(request):
 
     response = OAuthResponse(**response)
 
-    response = requests.get(
-        "https://api.github.com/user",
-        headers={'Authorization': f"token {response.access_token}"})
+    # response = requests.get(
+    #     "https://api.github.com/user",
+    #     headers={'Authorization': f"token {response.access_token}"})
 
-    print(response.text)
+    session = secrets.token_hex(16)
 
-    return HttpResponseRedirect("http://localhost:3000")
+    response = HttpResponseRedirect(f"http://localhost:3000/session?session={session}")
+
+    return response
