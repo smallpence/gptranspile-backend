@@ -1,9 +1,13 @@
 "views for the api"
 import secrets
 from dataclasses import dataclass
+
+from django.utils import timezone
 from dotenv import dotenv_values
 from django.http import HttpResponseRedirect
 import requests
+
+from gptranspile_auth.models import UserSession
 
 config = dotenv_values(".env")
 
@@ -41,6 +45,12 @@ def auth(request):
     #     headers={'Authorization': f"token {response.access_token}"})
 
     session = secrets.token_hex(16)
+
+    user_session = UserSession(session_token=session,
+                               access_token=response.access_token,
+                               expiry=timezone.now()
+                               )
+    user_session.save()
 
     response = HttpResponseRedirect(f"http://localhost:3000/session?session={session}")
 
