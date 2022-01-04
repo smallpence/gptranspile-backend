@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class GptranspileConfig(AppConfig):
+class AuthConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'gptranspile'
+    name = 'gptranspile_auth'
