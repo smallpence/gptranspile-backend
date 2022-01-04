@@ -4,7 +4,7 @@ from dataclasses import dataclass
 
 from django.utils import timezone
 from dotenv import dotenv_values
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse, HttpResponseForbidden
 import requests
 
 from gptranspile_auth.models import UserSession
@@ -24,13 +24,13 @@ class OAuthResponse:
 
 
 def auth(request):
-    "test endpoint"
+    "authenticate and create a session"
 
     client_id = "1c3ec89d317df07022fe"
     client_secret = config["GITHUB_CLIENT_SECRET"]
     code = request.GET.get('code')
 
-    response = requests.post(
+    oauth_response = requests.post(
         headers={'Accept': "application/json"},
         url=f"https://github.com/login/oauth/access_token"
             f"?client_id={client_id}"
@@ -38,20 +38,41 @@ def auth(request):
             f"&code={code}"
     ).json()
 
-    response = OAuthResponse(**response)
+    oauth_response = OAuthResponse(**oauth_response)
 
-    # response = requests.get(
-    #     "https://api.github.com/user",
-    #     headers={'Authorization': f"token {response.access_token}"})
+    user_response = requests.get(
+        "https://api.github.com/user",
+        headers={'Authorization': f"token {oauth_response.access_token}"}).json()
 
     session = secrets.token_hex(16)
 
     user_session = UserSession(session_token=session,
-                               access_token=response.access_token,
-                               expiry=timezone.now()
+                               access_token=oauth_response.access_token,
+                               expiry=timezone.now(),
+                               userid=user_response["id"]
                                )
     user_session.save()
+    print(user_session)
 
-    response = HttpResponseRedirect(f"http://localhost:3000/session?session={session}")
+    oauth_response = HttpResponseRedirect(f"http://localhost:3000/session?session={session}")
 
-    return response
+    return oauth_response
+
+def secure_request(request):
+    "a secured request to the database"
+    session = request.headers.get("session")
+
+    if not session:
+        return HttpResponseForbidden()
+
+    try:
+        found: UserSession = UserSession.objects.get(session_token=session)
+    except UserSession.DoesNotExist:
+        return HttpResponseForbidden("invalid session")
+
+    if not found.is_fresh():
+        return HttpResponseForbidden("session expired")
+
+    print(found.access_token)
+
+    return HttpResponse("hello world")

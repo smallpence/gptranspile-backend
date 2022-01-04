@@ -11,6 +11,11 @@ class UserSession(models.Model):
     session_token = models.CharField(primary_key=True, max_length=32)
     access_token = models.CharField(max_length=32)
     expiry = models.DateTimeField('expiry date')
+    userid = models.CharField(max_length=16)
+
+
+    def __str__(self):
+        return f"s: {self.session_token} a: {self.access_token} u: {self.userid}"
 
 
     def is_fresh(self):
