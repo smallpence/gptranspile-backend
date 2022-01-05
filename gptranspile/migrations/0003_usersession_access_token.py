@@ -7,7 +7,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('gptranspile_auth', '0002_remove_usersession_id_usersession_session_token'),
+        ('gptranspile', '0002_remove_usersession_id_usersession_session_token'),
     ]
 
     operations = [

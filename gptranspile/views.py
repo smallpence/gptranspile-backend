@@ -8,7 +8,7 @@ from dotenv import dotenv_values
 from django.http import HttpResponseRedirect, HttpResponse, HttpResponseForbidden
 import requests
 
-from gptranspile_auth.models import UserSession
+from gptranspile.models import UserSession
 
 config = dotenv_values(".env")
 
@@ -59,7 +59,7 @@ def auth(request):
 
     return oauth_response
 
-def secure_request(request):
+def query_gpt(request):
     "a secured request to the database"
     session = request.COOKIES.get("gptranspile_session")
 

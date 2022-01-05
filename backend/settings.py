@@ -41,7 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'gptranspile_auth.apps.AuthConfig',
+    'gptranspile.apps.AuthConfig',
     'corsheaders',
 ]
 
@@ -94,16 +94,16 @@ DATABASES = {
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.gptranspile_auth.password_validation.UserAttributeSimilarityValidator',
+        'NAME': 'django.contrib.gptranspile.password_validation.UserAttributeSimilarityValidator',
     },
     {
-        'NAME': 'django.contrib.gptranspile_auth.password_validation.MinimumLengthValidator',
+        'NAME': 'django.contrib.gptranspile.password_validation.MinimumLengthValidator',
     },
     {
-        'NAME': 'django.contrib.gptranspile_auth.password_validation.CommonPasswordValidator',
+        'NAME': 'django.contrib.gptranspile.password_validation.CommonPasswordValidator',
     },
     {
-        'NAME': 'django.contrib.gptranspile_auth.password_validation.NumericPasswordValidator',
+        'NAME': 'django.contrib.gptranspile.password_validation.NumericPasswordValidator',
     },
 ]
 

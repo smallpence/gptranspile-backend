@@ -7,7 +7,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('gptranspile_auth', '0001_initial'),
+        ('gptranspile', '0001_initial'),
     ]
 
     operations = [

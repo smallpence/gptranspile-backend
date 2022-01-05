@@ -17,6 +17,6 @@ from django.contrib import admin
 from django.urls import path, include
 
 urlpatterns = [
-    path('auth/', include('gptranspile_auth.urls')),
+    path('backend/', include('gptranspile.urls')),
     path('admin/', admin.site.urls),
 ]
