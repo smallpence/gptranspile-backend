@@ -53,15 +53,15 @@ def auth(request):
                                userid=user_response["id"]
                                )
     user_session.save()
-    print(user_session)
 
-    oauth_response = HttpResponseRedirect(f"http://localhost:3000/session?session={session}")
+    oauth_response = HttpResponseRedirect("http://127.0.0.1:3000")
+    oauth_response.set_cookie("gptranspile_session", session, httponly=False, samesite="strict")
 
     return oauth_response
 
 def secure_request(request):
     "a secured request to the database"
-    session = request.headers.get("session")
+    session = request.COOKIES.get("gptranspile_session")
 
     if not session:
         return HttpResponseForbidden()
@@ -73,7 +73,5 @@ def secure_request(request):
 
     if not found.is_fresh():
         return HttpResponseForbidden("session expired")
-
-    print(found.access_token)
 
     return HttpResponse("hello world")
