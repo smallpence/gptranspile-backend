@@ -54,7 +54,7 @@ def auth(request):
                                )
     user_session.save()
 
-    oauth_response = HttpResponseRedirect("http://127.0.0.1:3000")
+    oauth_response = HttpResponseRedirect(f"{config['URL']}")
     oauth_response.set_cookie("gptranspile_session", session, httponly=False, samesite="strict")
 
     return oauth_response
