@@ -135,7 +135,8 @@ CORS_ALLOWED_ORIGINS = [
 ]
 
 CORS_ALLOW_HEADERS = [
-    'session',
+    'code',
+    'language'
 ]
 
 CORS_ALLOW_CREDENTIALS = True

@@ -1,11 +1,13 @@
 "views for the api"
+import json
 import secrets
 from dataclasses import dataclass
 from datetime import timedelta
 
 from django.utils import timezone
 from dotenv import dotenv_values
-from django.http import HttpResponseRedirect, HttpResponse, HttpResponseForbidden
+from django.http import \
+    HttpResponseRedirect, HttpResponse, HttpResponseForbidden, HttpResponseBadRequest
 import requests
 
 from gptranspile.models import UserSession
@@ -64,7 +66,7 @@ def query_gpt(request):
     session = request.COOKIES.get("gptranspile_session")
 
     if not session:
-        return HttpResponseForbidden()
+        return HttpResponseBadRequest("no session")
 
     try:
         found: UserSession = UserSession.objects.get(session_token=session)
@@ -74,4 +76,21 @@ def query_gpt(request):
     if not found.is_fresh():
         return HttpResponseForbidden("session expired")
 
-    return HttpResponse("hello world")
+    code = request.headers.get("code")
+    if not code:
+        return HttpResponseBadRequest("no code")
+
+    language = request.headers.get("language")
+    if not language:
+        return HttpResponseBadRequest("no language")
+
+    response = requests.post("https://api.openai.com/v1/engines/davinci/completions",
+                  headers={
+                      'Authorization': f"Bearer {config['GPT_SECRET']}",
+                      'Content-Type': "application/json"
+                  },
+                  data=json.dumps({'prompt': code, 'max_tokens': 40}))
+
+    print(response.text)
+
+    return HttpResponse(response.json()["choices"][0]["text"])
