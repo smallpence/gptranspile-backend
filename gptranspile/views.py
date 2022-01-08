@@ -7,7 +7,7 @@ from datetime import timedelta
 from django.utils import timezone
 from dotenv import dotenv_values
 from django.http import \
-    HttpResponseRedirect, HttpResponse, HttpResponseForbidden, HttpResponseBadRequest
+    HttpResponseRedirect, HttpResponseForbidden, HttpResponseBadRequest, HttpResponse
 import requests
 
 from gptranspile.models import UserSession
@@ -61,6 +61,20 @@ def auth(request):
 
     return oauth_response
 
+def check_session(request):
+    "check whether the requests session is valid"
+    session = request.COOKIES.get("gptranspile_session")
+
+    if not session:
+        return HttpResponseBadRequest("no session")
+
+    try:
+        UserSession.objects.get(session_token=session)
+    except UserSession.DoesNotExist:
+        return HttpResponseForbidden("invalid session")
+
+    return HttpResponse("valid session")
+
 def query_gpt(request):
     "a secured request to the database"
     session = request.COOKIES.get("gptranspile_session")
@@ -83,6 +97,8 @@ def query_gpt(request):
     language = request.headers.get("language")
     if not language:
         return HttpResponseBadRequest("no language")
+
+    print("incoming!")
 
     response = requests.post("https://api.openai.com/v1/engines/davinci/completions",
                   headers={

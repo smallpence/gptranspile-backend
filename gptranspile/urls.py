@@ -1,10 +1,11 @@
 "url map for the api"
 from django.urls import path
 
-from .views import auth, query_gpt
+from .views import auth, query_gpt, check_session
 
 app_name = "gptranspile"
 urlpatterns = [
     path("auth", auth, name="authenticate"),
-    path("gpt3", query_gpt, name="query gpt")
+    path("gpt3", query_gpt, name="query gpt"),
+    path("checksession", check_session, name="check session")
 ]
