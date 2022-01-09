@@ -7,7 +7,7 @@ from datetime import timedelta
 from django.utils import timezone
 from dotenv import dotenv_values
 from django.http import \
-    HttpResponseRedirect, HttpResponseForbidden, HttpResponseBadRequest, HttpResponse
+    HttpResponseRedirect, HttpResponseForbidden, HttpResponseBadRequest, HttpResponse, JsonResponse
 import requests
 
 from gptranspile.models import UserSession
@@ -74,6 +74,26 @@ def check_session(request):
         return HttpResponseForbidden("invalid session")
 
     return HttpResponse("valid session")
+
+def get_user_details(request):
+    "queries the session details from github"
+    session = request.COOKIES.get("gptranspile_session")
+
+    if not session:
+        return HttpResponseBadRequest("no session")
+
+    try:
+        found: UserSession = UserSession.objects.get(session_token=session)
+        user_response = requests.get(
+            "https://api.github.com/user",
+            headers={'Authorization': f"token {found.access_token}"}).json()
+        return JsonResponse({
+            'username': user_response['login'],
+            'user_image': user_response['avatar_url']
+        })
+
+    except UserSession.DoesNotExist:
+        return HttpResponseForbidden("invalid session")
 
 def query_gpt(request):
     "a secured request to the database"
