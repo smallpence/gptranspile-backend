@@ -11,6 +11,7 @@ from django.http import \
 import requests
 
 from gptranspile.models import UserSession
+from gptranspile.prompt import gen_prompt
 
 config = dotenv_values(".env")
 
@@ -120,12 +121,16 @@ def query_gpt(request):
 
     print("incoming!")
 
+    prompt = gen_prompt("javascript","python", code)
+
+    print(prompt)
+
     response = requests.post("https://api.openai.com/v1/engines/davinci/completions",
                   headers={
                       'Authorization': f"Bearer {config['GPT_SECRET']}",
                       'Content-Type': "application/json"
                   },
-                  data=json.dumps({'prompt': code, 'max_tokens': 40}))
+                  data=json.dumps({'prompt': prompt, 'max_tokens': 40, 'stop': "#end"}))
 
     print(response.text)
 
