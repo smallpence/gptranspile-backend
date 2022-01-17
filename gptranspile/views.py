@@ -119,11 +119,7 @@ def query_gpt(request):
     if not language:
         return HttpResponseBadRequest("no language")
 
-    print("incoming!")
-
-    prompt = gen_prompt("javascript","python", code)
-
-    print(prompt)
+    prompt = gen_prompt("javascript","python", json.loads(code))
 
     response = requests.post("https://api.openai.com/v1/engines/davinci/completions",
                   headers={
@@ -131,7 +127,5 @@ def query_gpt(request):
                       'Content-Type': "application/json"
                   },
                   data=json.dumps({'prompt': prompt, 'max_tokens': 40, 'stop': "#end"}))
-
-    print(response.text)
 
     return HttpResponse(response.json()["choices"][0]["text"])
